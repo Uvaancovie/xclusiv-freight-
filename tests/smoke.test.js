@@ -11,6 +11,10 @@ const html = fs.readFileSync(path.join(DIST, "index.html"), "utf8").replace(/\s*
 const jsFile = fs.readdirSync(path.join(DIST, "assets")).find((f) => f.endsWith(".js"));
 const bundle = fs.readFileSync(path.join(DIST, "assets", jsFile), "utf8");
 
+const distHtml = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
+const ogImageInDist = fs.existsSync(path.join(DIST, "og-image.png"));
+const faviconInDist = fs.existsSync(path.join(DIST, "favicon.png"));
+
 const errors = [];
 const logs = [];
 
@@ -55,6 +59,8 @@ const dom = new JSDOM(html, {
     window.open = function () { logs.push("window.open called"); };
     window.URL.createObjectURL = () => "blob:mock";
     window.URL.revokeObjectURL = () => {};
+    window.clipboard = { writeText: (t) => logs.push("copied: " + t) };
+    Object.defineProperty(window.navigator, "clipboard", { value: window.clipboard });
     Object.defineProperty(window.navigator, "mediaDevices", { value: { getUserMedia: () => Promise.reject(new Error("no cam")) } });
     window.addEventListener("error", (e) => errors.push(String(e.error ? e.error.stack : e.message)));
     window.addEventListener("unhandledrejection", (e) => errors.push("unhandled: " + String(e.reason && e.reason.stack)));
@@ -82,6 +88,16 @@ function check(name, cond, extra) {
 
 setTimeout(() => {
   console.log("== Smoke test: Xclusiv Freight (production bundle) ==");
+
+  // SEO / social preview in the built HTML
+  check("og:title present", distHtml.includes('property="og:title"'));
+  check("og:description present", distHtml.includes('property="og:description"'));
+  check("og:image present", distHtml.includes('property="og:image"'));
+  check("og:image URL substituted from env", distHtml.includes("https://xclusiv-freight.vercel.app/og-image.png"), "env not substituted");
+  check("twitter card present", distHtml.includes('name="twitter:card"'));
+  check("og-image.png copied to dist", ogImageInDist);
+  check("favicon copied to dist", faviconInDist);
+  check("canonical present", distHtml.includes('rel="canonical"'));
 
   check("stats: 3 active loads", q("#statActive").textContent === "3", q("#statActive").textContent);
   check("activity list rendered", qa("#activityList li").length === 5, String(qa("#activityList li").length));
@@ -159,6 +175,9 @@ setTimeout(() => {
         click(qa(".nav-link").find((a) => a.dataset.route === "reports"));
         const dieselVal = qa("#view-reports .stat-card .stat-value")[0].textContent.replace(/\u00A0/g, " ");
         check("reports diesel total", dieselVal.includes("3 076"), dieselVal);
+        click(q("#csvBtn"));
+        click(q("#shareAppBtn"));
+        check("share copies site URL", logs.some((l) => l.includes("copied: https://xclusiv-freight.vercel.app")), logs.join(" | "));
 
         check("no runtime errors", errors.length === 0, errors.join(" | "));
         console.log(`\n${pass} passed, ${fail} failed`);

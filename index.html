@@ -4,7 +4,39 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#F97316" />
-  <title>Xclusiv Freight — Logistics Console</title>
+  <title>Xclusiv Freight — Logistics & Document Management</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Xclusiv Freight is the offline-first logistics console for your fleet. Dispatch load instructions, scan diesel slips, tolls and PODs, and send formatted trip reports via WhatsApp and email." />
+  <meta name="keywords" content="freight, logistics, fleet management, load dispatch, proof of delivery, diesel slips, trucking, South Africa" />
+  <meta name="author" content="Xclusiv Freight" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="%VITE_SITE_URL%/" />
+
+  <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Xclusiv Freight" />
+  <meta property="og:title" content="Xclusiv Freight — Logistics & Document Management" />
+  <meta property="og:description" content="Dispatch load instructions, capture PODs and diesel slips on the road, and send trip reports to the office — all offline-first." />
+  <meta property="og:url" content="%VITE_SITE_URL%/" />
+  <meta property="og:image" content="%VITE_SITE_URL%/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:locale" content="en_ZA" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Xclusiv Freight — Logistics & Document Management" />
+  <meta name="twitter:description" content="Dispatch load instructions, capture PODs and diesel slips on the road, and send trip reports to the office — offline-first." />
+  <meta name="twitter:image" content="%VITE_SITE_URL%/og-image.png" />
+
+  <!-- PWA / App -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+
   <link rel="stylesheet" href="/src/styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -301,8 +333,9 @@
         <div class="panel-head"><h2>Sage Export</h2></div>
         <p class="muted">Generate a formatted CSV with line items for diesel, tolls, and trip income — ready for Sage import.</p>
         <div class="row">
-          <button class="btn primary">📤 Generate CSV</button>
-          <button class="btn ghost">📧 Email to Me</button>
+          <button class="btn primary" id="csvBtn">📤 Generate CSV</button>
+          <button class="btn ghost" id="emailBtn">📧 Email to Me</button>
+          <button class="btn ghost" id="shareAppBtn">🔗 Share App</button>
         </div>
       </div>
     </section>

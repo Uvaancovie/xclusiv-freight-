@@ -2,6 +2,7 @@ import { $, $$ } from "../core/utils.js";
 import { money, toast } from "../core/utils.js";
 import { DB, SEBASTIAN } from "../core/store.js";
 import { fmtDate, download } from "../core/utils.js";
+import { SITE_URL } from "../core/config.js";
 import { dispatchMessage } from "./dispatch.js";
 
 export function renderReports() {
@@ -32,14 +33,28 @@ export function exportCSV() {
 }
 
 export function bindReports() {
-  $$("#view-reports .btn").forEach((b, i) =>
-    b.addEventListener("click", () => {
-      if (i === 0) exportCSV();
-      else {
-        const body = "Xclusiv Freight weekly report attached.\n\n" + dispatchMessage(DB.loads()[0]?.load_id || "");
-        window.location.href = `mailto:${SEBASTIAN.email}?subject=${encodeURIComponent("Weekly Fleet Report")}&body=${encodeURIComponent(body)}`;
-        toast("Email draft opened");
+  $("#csvBtn").addEventListener("click", exportCSV);
+  $("#emailBtn").addEventListener("click", () => {
+    const body = "Xclusiv Freight weekly report attached.\n\n" + dispatchMessage(DB.loads()[0]?.load_id || "");
+    window.location.href = `mailto:${SEBASTIAN.email}?subject=${encodeURIComponent("Weekly Fleet Report")}&body=${encodeURIComponent(body)}`;
+    toast("Email draft opened");
+  });
+  $("#shareAppBtn").addEventListener("click", async () => {
+    const shareData = {
+      title: "Xclusiv Freight",
+      text: "Xclusiv Freight — logistics & document management for our fleet",
+      url: SITE_URL,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(SITE_URL);
+        toast("App link copied to clipboard");
       }
-    })
-  );
+    } catch (e) {
+      if (e && e.name === "AbortError") return;
+      toast("Could not share link on this device");
+    }
+  });
 }
